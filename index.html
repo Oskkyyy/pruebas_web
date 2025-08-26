@@ -2,19 +2,39 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Contador de visitas</title>
+  <title>Pruebas Web</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 100px;
+    }
+    h1 {
+      color: #333;
+    }
+    .contador {
+      margin-top: 20px;
+      font-size: 20px;
+      background: #f0f0f0;
+      display: inline-block;
+      padding: 10px 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+  </style>
 </head>
 <body>
-  <h1>Bienvenido a mi página</h1>
-  <p>Visitas totales: <span id="contador">0</span></p>
+  <h1>Bienvenido a Pruebas Web 🚀</h1>
+  <p class="contador">Visitas totales: <span id="contador">0</span></p>
 
   <script>
-    // Llamada a CountAPI
-    fetch('https://api.countapi.xyz/hit/misitio.com/visitas')
+    // Usamos CountAPI con tu propio "namespace" (oskkyyy.github.io)
+    fetch('https://api.countapi.xyz/hit/oskkyyy.github.io/pruebas_web')
       .then(res => res.json())
       .then(res => {
         document.getElementById('contador').innerText = res.value;
-      });
+      })
+      .catch(err => console.error("Error con CountAPI:", err));
   </script>
 </body>
 </html>
