@@ -1,40 +1,75 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Pruebas Web</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 100px;
-    }
-    h1 {
-      color: #333;
-    }
-    .contador {
-      margin-top: 20px;
-      font-size: 20px;
-      background: #f0f0f0;
-      display: inline-block;
-      padding: 10px 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
+    :root { font-family: system-ui, Arial, sans-serif; }
+    body { display:flex; min-height:100vh; align-items:center; justify-content:center; background:#f7f7f8; margin:0; }
+    .card { background:#fff; padding:28px 32px; border-radius:16px; box-shadow:0 10px 25px rgba(0,0,0,.08); text-align:center; }
+    h1 { margin:0 0 12px; font-size:24px; }
+    .pill { display:inline-block; padding:8px 14px; border-radius:999px; background:#f2f2f3; font-weight:600; }
+    small { display:block; margin-top:10px; opacity:.65; }
+    a { color:inherit; }
   </style>
 </head>
 <body>
-  <h1>Bienvenido a Pruebas Web 🚀</h1>
-  <p class="contador">Visitas totales: <span id="contador">0</span></p>
+  <div class="card">
+    <h1>Bienvenido a Pruebas Web 🚀</h1>
+    <div class="pill">Visitas totales: <span id="contador">0</span></div>
+    <small id="estado">Actualizando…</small>
+    <small>
+      Si no sube, prueba abrir el endpoint:
+      <a href="https://api.countapi.xyz/hit/oskkyyy.github.io/pruebas_web" target="_blank" rel="noopener">CountAPI</a>
+    </small>
+  </div>
 
   <script>
-    // Usamos CountAPI con tu propio "namespace" (oskkyyy.github.io)
-    fetch('https://api.countapi.xyz/hit/oskkyyy.github.io/pruebas_web')
-      .then(res => res.json())
-      .then(res => {
-        document.getElementById('contador').innerText = res.value;
-      })
-      .catch(err => console.error("Error con CountAPI:", err));
+    (function () {
+      // Personaliza aquí si quieres contar por página:
+      // const KEY = (location.pathname.replace(/\W+/g, "_") || "home");
+      const NAMESPACE = "oskkyyy.github.io";
+      const KEY = "pruebas_web";
+
+      // 1) Callback global para JSONP (evita CORS y algunos bloqueos)
+      window.updateCount = function (data) {
+        if (data && typeof data.value !== "undefined") {
+          document.getElementById("contador").textContent = data.value;
+          document.getElementById("estado").textContent = "";
+          window.__countapi_ok__ = true;
+        }
+      };
+
+      // 1A) Intento vía JSONP
+      var jsonp = document.createElement("script");
+      jsonp.async = true;
+      jsonp.src = "https://api.countapi.xyz/hit/" +
+                  encodeURIComponent(NAMESPACE) + "/" +
+                  encodeURIComponent(KEY) +
+                  "?callback=updateCount";
+      document.head.appendChild(jsonp);
+
+      // 2) Fallback: fetch si JSONP no respondió (p.ej. bloqueado)
+      setTimeout(function () {
+        if (window.__countapi_ok__) return;
+        fetch("https://api.countapi.xyz/hit/" +
+              encodeURIComponent(NAMESPACE) + "/" +
+              encodeURIComponent(KEY))
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            window.__countapi_ok__ = true;
+            document.getElementById("contador").textContent = data.value;
+            document.getElementById("estado").textContent = "";
+          })
+          .catch(function () {
+            document.getElementById("estado").textContent =
+              "No se pudo contactar a CountAPI (¿bloqueador de anuncios o red corporativa?)";
+          });
+      }, 1200);
+    })();
   </script>
+
+  <noscript>Activa JavaScript para ver el contador.</noscript>
 </body>
 </html>
