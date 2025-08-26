@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Contador de visitas</title>
+</head>
+<body>
+  <h1>Bienvenido a mi página</h1>
+  <p>Visitas totales: <span id="contador">0</span></p>
+
+  <script>
+    // Llamada a CountAPI
+    fetch('https://api.countapi.xyz/hit/misitio.com/visitas')
+      .then(res => res.json())
+      .then(res => {
+        document.getElementById('contador').innerText = res.value;
+      });
+  </script>
+</body>
+</html>
